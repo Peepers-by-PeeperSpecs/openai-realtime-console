@@ -24,6 +24,7 @@ import { Button } from '../components/button/Button';
 import { Toggle } from '../components/toggle/Toggle';
 import { Map } from '../components/Map';
 import { ProductDisplay } from '../components/ProductDisplay';
+import { OrderDisplay } from '../components/OrderDisplay';
 
 import './ConsolePage.scss';
 import { isJsxOpeningLikeElement } from 'typescript';
@@ -66,6 +67,26 @@ interface Product {
     };
   };
   description: string;
+}
+
+/**
+ * Type for order information
+ */
+interface Order {
+  name: string;
+  customer?: {
+    email: string;
+  };
+  lineItems?: {
+    edges: Array<{
+      node: {
+        title: string;
+      };
+    }>;
+  };
+  shippingAddress?: {
+    zip: string;
+  };
 }
 
 export function ConsolePage() {
@@ -134,11 +155,12 @@ export function ConsolePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [memoryKv, setMemoryKv] = useState<{ [key: string]: any }>({});
   const [coords, setCoords] = useState<Coordinates | null>({
-    lat: 37.775593,
-    lng: -122.418137,
+    lat: 41.483845,
+    lng: -87.063965,
   });
   const [marker, setMarker] = useState<Coordinates | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
 
   /**
    * Utility for formatting the timing of logs
@@ -179,6 +201,7 @@ export function ConsolePage() {
    */
   const connectConversation = useCallback(async () => {
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     const wavRecorder = wavRecorderRef.current;
     const wavStreamPlayer = wavStreamPlayerRef.current;
 
@@ -218,12 +241,13 @@ export function ConsolePage() {
     setItems([]);
     setMemoryKv({});
     setCoords({
-      lat: 37.775593,
-      lng: -122.418137,
+      lat: 41.483845,
+      lng: -87.063965,
     });
     setMarker(null);
 
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     client.disconnect();
 
     const wavRecorder = wavRecorderRef.current;
@@ -235,6 +259,7 @@ export function ConsolePage() {
 
   const deleteConversationItem = useCallback(async (id: string) => {
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     client.deleteItem(id);
   }, []);
 
@@ -245,6 +270,7 @@ export function ConsolePage() {
   const startRecording = async () => {
     setIsRecording(true);
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     const wavRecorder = wavRecorderRef.current;
     const wavStreamPlayer = wavStreamPlayerRef.current;
     const trackSampleOffset = await wavStreamPlayer.interrupt();
@@ -261,6 +287,7 @@ export function ConsolePage() {
   const stopRecording = async () => {
     setIsRecording(false);
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     const wavRecorder = wavRecorderRef.current;
     await wavRecorder.pause();
     client.createResponse();
@@ -271,6 +298,7 @@ export function ConsolePage() {
    */
   const changeTurnEndType = async (value: string) => {
     const client = clientRef.current;
+    if (!client) throw new Error('RealtimeClient is not initialized');
     const wavRecorder = wavRecorderRef.current;
     if (value === 'none' && wavRecorder.getStatus() === 'recording') {
       await wavRecorder.pause();
@@ -390,6 +418,7 @@ export function ConsolePage() {
     // Get refs
     const wavStreamPlayer = wavStreamPlayerRef.current;
     const client = clientRef.current;
+    if (!client) return;
 
     // Set instructions
     client.updateSession({ instructions: instructions });
@@ -532,6 +561,7 @@ export function ConsolePage() {
             },
           );
           const data = await response.json();
+          setOrder(data); // Update the order state
           return data;
         } catch (error) {
           console.error('Error calling getOrderByName:', error);
@@ -583,7 +613,7 @@ export function ConsolePage() {
       // cleanup; resets to defaults
       client.reset();
     };
-  }, []);
+  }, [clientRef.current]);
 
   /**
    * Render the application
@@ -813,6 +843,12 @@ export function ConsolePage() {
             <div className="content-block-title">get_product_by_title()</div>
             <div className="content-block-body full">
               <ProductDisplay product={product} />
+            </div>
+          </div>
+          <div className="content-block order">
+            <div className="content-block-title">get_order_by_name()</div>
+            <div className="content-block-body full">
+              <OrderDisplay order={order} />
             </div>
           </div>
         </div>
