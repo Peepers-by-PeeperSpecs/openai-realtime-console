@@ -24,6 +24,18 @@ export async function getProductByTitle(productTitle) {
               description
               vendor
               productType
+              variants (first: 100) {
+                edges {
+                  node {
+                    title
+                    price
+                    selectedOptions {
+                      name
+                      value
+                    }
+                  }
+                }
+              }
             }
           }
         }

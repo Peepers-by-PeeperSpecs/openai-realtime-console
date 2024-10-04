@@ -75,10 +75,10 @@ export function ConsolePage() {
    * - RealtimeClient (API client)
    */
   const wavRecorderRef = useRef<WavRecorder>(
-    new WavRecorder({ sampleRate: 24000 })
+    new WavRecorder({ sampleRate: 24000 }),
   );
   const wavStreamPlayerRef = useRef<WavStreamPlayer>(
-    new WavStreamPlayer({ sampleRate: 24000 })
+    new WavStreamPlayer({ sampleRate: 24000 }),
   );
   const clientRef = useRef<RealtimeClient>(
     new RealtimeClient(
@@ -87,8 +87,8 @@ export function ConsolePage() {
         : {
             apiKey: apiKey,
             dangerouslyAllowAPIKeyInBrowser: true,
-          }
-    )
+          },
+    ),
   );
 
   /**
@@ -289,7 +289,7 @@ export function ConsolePage() {
    */
   useEffect(() => {
     const conversationEls = [].slice.call(
-      document.body.querySelectorAll('[data-conversation-content]')
+      document.body.querySelectorAll('[data-conversation-content]'),
     );
     for (const el of conversationEls) {
       const conversationEl = el as HTMLDivElement;
@@ -331,7 +331,7 @@ export function ConsolePage() {
               '#0099ff',
               10,
               0,
-              8
+              8,
             );
           }
         }
@@ -353,7 +353,7 @@ export function ConsolePage() {
               '#009900',
               10,
               0,
-              8
+              8,
             );
           }
         }
@@ -409,7 +409,7 @@ export function ConsolePage() {
           return newKv;
         });
         return { ok: true };
-      }
+      },
     );
     client.addTool(
       {
@@ -439,7 +439,7 @@ export function ConsolePage() {
         setMarker({ lat, lng, location });
         setCoords({ lat, lng, location });
         const result = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m`,
         );
         const json = await result.json();
         const temperature = {
@@ -452,9 +452,10 @@ export function ConsolePage() {
         };
         setMarker({ lat, lng, location, temperature, wind_speed });
         return json;
-      }
+      },
     );
-    const RELAY_SERVER_BASE_URL = LOCAL_RELAY_SERVER_URL || 'http://localhost:8081';
+    const RELAY_SERVER_BASE_URL =
+      LOCAL_RELAY_SERVER_URL || 'http://localhost:8081';
 
     client.addTool(
       {
@@ -473,20 +474,22 @@ export function ConsolePage() {
       },
       async ({ product_title }) => {
         try {
-          const response = await fetch(`${RELAY_SERVER_BASE_URL}/api/getProductByTitle`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_title }),
-          });
+          const response = await fetch(
+            `${RELAY_SERVER_BASE_URL}/api/getProductByTitle`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ product_title }),
+            },
+          );
           const data = await response.json();
           return data;
         } catch (error) {
           console.error('Error calling getProductByTitle:', error);
           return { error: error.message };
         }
-      }
+      },
     );
-    
 
     // handle realtime events from client + server for event logging
     client.on('realtime.event', (realtimeEvent: RealtimeEvent) => {
@@ -518,7 +521,7 @@ export function ConsolePage() {
         const wavFile = await WavRecorder.decode(
           item.formatted.audio,
           24000,
-          24000
+          24000,
         );
         item.formatted.file = wavFile;
       }

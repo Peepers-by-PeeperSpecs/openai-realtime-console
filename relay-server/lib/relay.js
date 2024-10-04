@@ -13,7 +13,7 @@ export class RealtimeRelay {
     this.wss = new WebSocketServer({ server });
     this.wss.on('connection', this.connectionHandler.bind(this));
     this.log(`Listening on ws://localhost`);
-  }  
+  }
 
   async connectionHandler(ws, req) {
     if (!req.url) {
@@ -36,25 +36,25 @@ export class RealtimeRelay {
     const client = new RealtimeClient({ apiKey: this.apiKey });
 
     // Add the tool
-client.addTool(
-  {
-    name: 'get_product_by_title',
-    description: 'Fetches a product from Shopify by its title.',
-    parameters: {
-      type: 'object',
-      properties: {
-        product_title: {
-          type: 'string',
-          description: 'The title of the product to fetch.',
+    client.addTool(
+      {
+        name: 'get_product_by_title',
+        description: 'Fetches a product from Shopify by its title.',
+        parameters: {
+          type: 'object',
+          properties: {
+            product_title: {
+              type: 'string',
+              description: 'The title of the product to fetch.',
+            },
+          },
+          required: ['product_title'],
         },
       },
-      required: ['product_title'],
-    },
-  },
-  async ({ product_title }) => {
-    return await getProductByTitle(product_title);
-  }
-);
+      async ({ product_title }) => {
+        return await getProductByTitle(product_title);
+      },
+    );
 
     // Relay: OpenAI Realtime API Event -> Browser Event
     client.realtime.on('server.*', (event) => {
