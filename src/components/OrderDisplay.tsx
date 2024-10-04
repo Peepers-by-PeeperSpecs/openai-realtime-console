@@ -26,7 +26,7 @@ export const OrderDisplay: React.FC<OrderDisplayProps> = ({ order }) => {
 
   return (
     <div className="order-display">
-      <h3>Order: {order.name}</h3>
+      <h3 style={{ marginTop: '80px' }}>Order: {order.name}</h3>
       <p>Customer Email: {order.customer?.email || 'N/A'}</p>
       <p>Shipping Zip: {order.shippingAddress?.zip || 'N/A'}</p>
       <h4>Line Items:</h4>

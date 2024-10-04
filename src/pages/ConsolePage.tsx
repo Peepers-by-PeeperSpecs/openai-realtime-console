@@ -161,6 +161,7 @@ export function ConsolePage() {
   const [marker, setMarker] = useState<Coordinates | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
+  const [lastToolCall, setLastToolCall] = useState<string | null>(null);
 
   /**
    * Utility for formatting the timing of logs
@@ -604,6 +605,10 @@ export function ConsolePage() {
         );
         item.formatted.file = wavFile;
       }
+      // Update lastToolCall if this item is a function call
+      if (item.type === 'function_call') {
+        setLastToolCall(item.formatted.tool.name);
+      }
       setItems(items);
     });
 
@@ -807,50 +812,66 @@ export function ConsolePage() {
           </div>
         </div>
         <div className="content-right">
-          <div className="content-block map">
-            <div className="content-block-title">get_weather()</div>
-            <div className="content-block-title bottom">
-              {marker?.location || 'not yet retrieved'}
-              {!!marker?.temperature && (
-                <>
-                  <br />
-                  🌡️ {marker.temperature.value} {marker.temperature.units}
-                </>
-              )}
-              {!!marker?.wind_speed && (
-                <>
-                  {' '}
-                  🍃 {marker.wind_speed.value} {marker.wind_speed.units}
-                </>
-              )}
+          {lastToolCall === 'get_weather' && (
+            <div className="content-block map">
+              <div className="content-block-title">get_weather()</div>
+              <div className="content-block-title bottom">
+                {marker?.location || 'not yet retrieved'}
+                {!!marker?.temperature && (
+                  <>
+                    <br />
+                    🌡️ {marker.temperature.value} {marker.temperature.units}
+                  </>
+                )}
+                {!!marker?.wind_speed && (
+                  <>
+                    {' '}
+                    🍃 {marker.wind_speed.value} {marker.wind_speed.units}
+                  </>
+                )}
+              </div>
+              <div className="content-block-body full">
+                {coords && (
+                  <Map
+                    center={[coords.lat, coords.lng]}
+                    location={coords.location}
+                  />
+                )}
+              </div>
             </div>
-            <div className="content-block-body full">
-              {coords && (
-                <Map
-                  center={[coords.lat, coords.lng]}
-                  location={coords.location}
-                />
-              )}
+          )}
+          {lastToolCall === 'set_memory' && (
+            <div className="content-block kv">
+              <div className="content-block-title">set_memory()</div>
+              <div className="content-block-body content-kv">
+                {JSON.stringify(memoryKv, null, 2)}
+              </div>
             </div>
-          </div>
-          <div className="content-block kv">
-            <div className="content-block-title">set_memory()</div>
-            <div className="content-block-body content-kv">
-              {JSON.stringify(memoryKv, null, 2)}
+          )}
+          {lastToolCall === 'get_product_by_title' && (
+            <div className="content-block product">
+              <div className="content-block-title">get_product_by_title()</div>
+              <div className="content-block-body full">
+                <ProductDisplay product={product} />
+              </div>
             </div>
-          </div>
-          <div className="content-block product">
-            <div className="content-block-title">get_product_by_title()</div>
-            <div className="content-block-body full">
-              <ProductDisplay product={product} />
+          )}
+          {lastToolCall === 'get_order_by_name' && (
+            <div className="content-block order">
+              <div className="content-block-title">get_order_by_name()</div>
+              <div className="content-block-body full">
+                <OrderDisplay order={order} />
+              </div>
             </div>
-          </div>
-          <div className="content-block order">
-            <div className="content-block-title">get_order_by_name()</div>
-            <div className="content-block-body full">
-              <OrderDisplay order={order} />
+          )}
+          {!lastToolCall && (
+            <div className="content-block">
+              <div className="content-block-title">No tool called yet</div>
+              <div className="content-block-body">
+                Use a tool to display relevant information here.
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
