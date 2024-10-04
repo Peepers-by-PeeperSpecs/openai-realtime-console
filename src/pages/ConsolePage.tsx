@@ -23,6 +23,7 @@ import { X, Edit, Zap, ArrowUp, ArrowDown } from 'react-feather';
 import { Button } from '../components/button/Button';
 import { Toggle } from '../components/toggle/Toggle';
 import { Map } from '../components/Map';
+import { ProductDisplay } from '../components/ProductDisplay';
 
 import './ConsolePage.scss';
 import { isJsxOpeningLikeElement } from 'typescript';
@@ -52,6 +53,19 @@ interface RealtimeEvent {
   source: 'client' | 'server';
   count?: number;
   event: { [key: string]: any };
+}
+
+/**
+ * Type for product information
+ */
+interface Product {
+  title: string;
+  featuredMedia?: {
+    image: {
+      url: string;
+    };
+  };
+  description: string;
 }
 
 export function ConsolePage() {
@@ -124,6 +138,7 @@ export function ConsolePage() {
     lng: -122.418137,
   });
   const [marker, setMarker] = useState<Coordinates | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
 
   /**
    * Utility for formatting the timing of logs
@@ -483,6 +498,7 @@ export function ConsolePage() {
             },
           );
           const data = await response.json();
+          setProduct(data); // Update the product state
           return data;
         } catch (error) {
           console.error('Error calling getProductByTitle:', error);
@@ -791,6 +807,12 @@ export function ConsolePage() {
             <div className="content-block-title">set_memory()</div>
             <div className="content-block-body content-kv">
               {JSON.stringify(memoryKv, null, 2)}
+            </div>
+          </div>
+          <div className="content-block product">
+            <div className="content-block-title">get_product_by_title()</div>
+            <div className="content-block-body full">
+              <ProductDisplay product={product} />
             </div>
           </div>
         </div>

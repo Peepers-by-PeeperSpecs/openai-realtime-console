@@ -277,4 +277,25 @@
       }
     }
   }
+
+  .content-block.product {
+    margin-top: 20px;
+    
+    .product-display {
+      padding: 10px;
+      
+      h3 {
+        margin-bottom: 10px;
+      }
+      
+      img {
+        margin-bottom: 10px;
+      }
+      
+      p {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+    }
+  }
 }
