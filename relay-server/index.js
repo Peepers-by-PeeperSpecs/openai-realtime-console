@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { createServer } from 'http';
-import { getProductByTitle } from './lib/shopify.js';
+import { getProductByTitle, getOrderByName } from './lib/shopify.js';
 
 dotenv.config({ override: true });
 
@@ -29,6 +29,16 @@ app.post('/api/getProductByTitle', async (req, res) => {
   try {
     const product = await getProductByTitle(product_title);
     res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/getOrderByName', async (req, res) => {
+  const { order_name } = req.body;
+  try {
+    const order = await getOrderByName(order_name);
+    res.json(order);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

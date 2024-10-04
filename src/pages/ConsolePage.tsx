@@ -490,6 +490,39 @@ export function ConsolePage() {
         }
       },
     );
+    client.addTool(
+      {
+        name: 'get_order_by_name',
+        description: 'Fetches an order from Shopify by its name.',
+        parameters: {
+          type: 'object',
+          properties: {
+            order_name: {
+              type: 'string',
+              description: 'The name of the order to fetch.',
+            },
+          },
+          required: ['order_name'],
+        },
+      },
+      async ({ order_name }) => {
+        try {
+          const response = await fetch(
+            `${RELAY_SERVER_BASE_URL}/api/getOrderByName`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ order_name }),
+            },
+          );
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error calling getOrderByName:', error);
+          return { error: error.message };
+        }
+      },
+    );
 
     // handle realtime events from client + server for event logging
     client.on('realtime.event', (realtimeEvent: RealtimeEvent) => {

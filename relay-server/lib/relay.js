@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { RealtimeClient } from '@openai/realtime-api-beta';
-import { getProductByTitle } from './shopify.js';
+import { getProductByTitle, getOrderByName } from './shopify.js';
 
 export class RealtimeRelay {
   constructor(apiKey) {
@@ -53,6 +53,26 @@ export class RealtimeRelay {
       },
       async ({ product_title }) => {
         return await getProductByTitle(product_title);
+      },
+    );
+
+    client.addTool(
+      {
+        name: 'get_order_by_name',
+        description: 'Fetches an order from Shopify by its name.',
+        parameters: {
+          type: 'object',
+          properties: {
+            order_name: {
+              type: 'string',
+              description: 'The name of the order to fetch.',
+            },
+          },
+          required: ['order_name'],
+        },
+      },
+      async ({ order_name }) => {
+        return await getOrderByName(order_name);
       },
     );
 
