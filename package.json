@@ -5,6 +5,8 @@
   "private": true,
   "dependencies": {
     "@openai/realtime-api-beta": "github:openai/openai-realtime-api-beta",
+    "@shopify/admin-api-client": "^1.0.3",
+    "@shopify/shopify-api": "^11.5.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -13,6 +15,7 @@
     "@types/node": "^16.18.108",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",

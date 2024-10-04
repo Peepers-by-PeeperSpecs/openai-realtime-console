@@ -454,6 +454,39 @@ export function ConsolePage() {
         return json;
       }
     );
+    const RELAY_SERVER_BASE_URL = LOCAL_RELAY_SERVER_URL || 'http://localhost:8081';
+
+    client.addTool(
+      {
+        name: 'get_product_by_title',
+        description: 'Fetches a product from Shopify by its title.',
+        parameters: {
+          type: 'object',
+          properties: {
+            product_title: {
+              type: 'string',
+              description: 'The title of the product to fetch.',
+            },
+          },
+          required: ['product_title'],
+        },
+      },
+      async ({ product_title }) => {
+        try {
+          const response = await fetch(`${RELAY_SERVER_BASE_URL}/api/getProductByTitle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_title }),
+          });
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error calling getProductByTitle:', error);
+          return { error: error.message };
+        }
+      }
+    );
+    
 
     // handle realtime events from client + server for event logging
     client.on('realtime.event', (realtimeEvent: RealtimeEvent) => {
